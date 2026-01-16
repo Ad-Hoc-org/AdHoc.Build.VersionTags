@@ -1,0 +1,62 @@
+name: Publish NuGet Package to GitHub Registry
+
+on:
+  push:
+    branches:
+      - releases/*
+  create:
+    branches:
+      - releases/*
+    tags:
+      - releases/*
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Extract package information
+        id: package-information
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" =~ releases/([^/]+)/v(.+) ]]; then
+            echo "PACKAGE=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            version="${BASH_REMATCH[2]}"
+            echo "VERSION=$version" >> $GITHUB_ENV
+            if [[ "$version" =~ -|(.+\.){3,} ]]; then
+              echo "is-prerelease=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "is-prerelease=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "Branch name does not match the required pattern 'releases/{Package}/v{Version}'"
+            exit 1
+          fi
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Pack the project
+        run: dotnet pack --configuration Release --output ./nupkgs /p:RepositoryUrl=https://github.com/${{ github.repository }}
+
+      - name: Validate package version
+        run: |
+          PACKAGE_FILE=$(find ./nupkgs -name "$PACKAGE.$VERSION.nupkg" | head -n 1)
+          if [ -z "$PACKAGE_FILE" ]; then
+            echo "No NuGet package '$PACKAGE.$VERSION.nupkg' found."
+            echo "Maybe the package or version doesn't match the expected '$PACKAGE' with version '$VERSION'."
+            ls ./nupkgs
+            exit 1
+          fi
+
+      - name: Publish NuGet package to GitHub Packages
+        run: dotnet nuget push ./nupkgs/$PACKAGE.$VERSION.nupkg --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -k "${{ secrets.TOKEN_GITHUB }}"
+        
+      - name: Publish NuGet package
+        # no prereleases and build versions
+        if: ${{ steps.package-information.outputs.is-prerelease == 'false' }}
+        run: dotnet nuget push ./nupkgs/$PACKAGE.$VERSION.nupkg --source https://api.nuget.org/v3/index.json -k "${{ secrets.NUGET_TOKEN }}"

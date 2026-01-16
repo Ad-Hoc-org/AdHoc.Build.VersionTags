@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup Condition="'$(VersionTagConstants)' == ''">
+    <VersionTagConstants>true</VersionTagConstants>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="AdHoc.Build.VersionTags.GetVersionTags"
+		AssemblyFile="../build/AdHoc.Build.VersionTags.dll" />
+  <UsingTask TaskName="AdHoc.Build.VersionTags.GetTagsBuildVersion"
+		AssemblyFile="../build/AdHoc.Build.VersionTags.dll" />
+</Project>

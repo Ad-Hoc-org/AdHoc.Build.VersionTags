@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <MyTaggedPackageVersion Condition="'$(Configuration)' == 'Debug'">$(Version).1-debug</MyTaggedPackageVersion>
+    <MyTaggedPackageVersion Condition="'$(Configuration)' != 'Debug'">$(Version)</MyTaggedPackageVersion>
+    <PackageVersionTags Condition="'$(Configuration)' == 'Debug'">debug</PackageVersionTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Samples.MyTaggedPackage" VersionOverride="$(MyTaggedPackageVersion)" />
+  </ItemGroup>
+
+  <Target Name="_BuildPackage" BeforeTargets="CollectPackageReferences">
+    <Message Importance="High" Text="Using Samples.MyTaggedPackage version $(MyTaggedPackageVersion) with tags '$(PackageVersionTags)'" />
+  
+    <Exec Condition="!Exists('$(PackageOutputPath)Samples.MyTaggedPackage.$(MyTaggedPackageVersion).nupkg')"
+          Command="dotnet clean &quot;$(MSBuildThisFileDirectory)../Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj&quot; --configuration Release &amp; dotnet pack &quot;$(MSBuildThisFileDirectory)../Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj&quot; /p:VersionTags=$(PackageVersionTags)" />
+  </Target>
+
+</Project>

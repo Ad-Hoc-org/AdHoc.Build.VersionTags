@@ -1,0 +1,30 @@
+<Solution>
+  <Folder Name="/.Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="CODE-OF-CONDUCT.md" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="LICENSE" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+    <File Path="THIRD-PARTY-NOTICES" />
+  </Folder>
+  <Folder Name="/.Solution Items/.props/">
+    <File Path=".props/Build.props" />
+    <File Path=".props/Build.targets" />
+    <File Path=".props/icon.png" />
+    <File Path=".props/Project.Build.props" />
+    <File Path=".props/Project.Packages.props" />
+    <File Path=".props/sign.snk" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Samples.ConsoleApp/Samples.ConsoleApp.csproj" />
+    <Project Path="samples/Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj" />
+  </Folder>
+  <Project Path="src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj" />
+</Solution>

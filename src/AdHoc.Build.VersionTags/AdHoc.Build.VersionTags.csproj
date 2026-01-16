@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <IsBuildTaskProject>true</IsBuildTaskProject>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+
+    
+    <Transitive>false</Transitive>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Transitive)">
+    <AssemblyName>$(AssemblyName).Transitive</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Transitive)' != 'true'">
+    <None Include="build/**" Pack="true" PackagePath="build" />
+    <None Include="buildMultiTargeting/**" Pack="true" PackagePath="buildMultiTargeting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Framework" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(Transitive)">
+    <Compile Remove="**/*.cs" />
+    <Compile Include="transitive/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Transitive)' != 'true'">
+    <Compile Remove="transitive/**/*.cs" />
+    <None Include="transitive/**/*.cs" />
+  </ItemGroup>
+
+  <Target Name="BuildTools" BeforeTargets="Build" Condition="'$(Transitive)' != 'true'">
+    <MSBuild Projects="$(MSBuildProjectFile)" Properties="Transitive=true;GeneratePackageOnBuild=false;Configuration=$(Configuration)" Targets="Build" />
+  </Target>
+  <Target Name="OutputToIntermediate" AfterTargets="CoreBuild">
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(BaseIntermediateOutputPath)$(Configuration)/build" />
+  </Target>
+  
+  <Target Name="IncludeToolsInPackage" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_PackageFiles Include="$(IntermediateOutputPath)build/$(AssemblyName).Transitive.dll" PackagePath="build" />
+      <_PackageFiles Include="$(IntermediateOutputPath)build/$(AssemblyName).dll" PackagePath="build" />
+    </ItemGroup>
+  </Target>
+
+</Project>

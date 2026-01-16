@@ -1,0 +1,76 @@
+name: Build and test .NET projects
+
+on: 
+  push:
+    branches:
+      - develop
+      - latest
+      - releases/*
+  create:
+    branches:
+      - releases/*
+    tags:
+      - releases/*
+    
+  pull_request:
+    branches: 
+    - develop
+
+jobs:
+  build:
+    name: Build ${{ matrix.display-name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ['debug', 'release']
+        include:
+        - configuration: 'debug'
+          display-name: 'Debug'
+        - configuration: 'release'
+          display-name: 'Release'
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build
+        run: dotnet build --configuration ${{ matrix.configuration }}
+
+  test:
+    name: Test ${{ matrix.configuration-name }} - ${{ matrix.framework }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ['debug', 'release']
+        dotnet-version: ['10.0']
+        include:
+        - dotnet-version: '10.0'
+          framework: 'net10.0'
+          install-version: '10.0.x'
+        - configuration: 'debug'
+          configuration-name: 'Debug'
+        - configuration: 'release'
+          configuration-name: 'Release'
+    steps:
+    - uses: actions/checkout@v1
+    
+    - name: Setup ${{ matrix.framework }}
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ matrix.install-version }}
+    - name: Setup .net10.0
+      uses: actions/setup-dotnet@v4
+      if: ${{ matrix.install-version != '10.0.x' }}
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Test
+      id: tests
+      run: |
+        dotnet test --framework ${{ matrix.framework }} --configuration ${{ matrix.configuration }}

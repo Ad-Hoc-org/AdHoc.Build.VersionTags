@@ -1,0 +1,56 @@
+<Project>
+  <UsingTask TaskName="AdHoc.Build.VersionTags.RegisterVersionTags"
+		AssemblyFile="../build/AdHoc.Build.VersionTags.dll" />
+  <UsingTask TaskName="AdHoc.Build.VersionTags.ImportVersionTagsCheck"
+		AssemblyFile="../build/AdHoc.Build.VersionTags.dll" />
+
+  <Target Name="RegisterVersionTags">
+    <AdHoc.Build.VersionTags.RegisterVersionTags
+      Tags="$(VersionTags)"
+      DefineConstants="$(VersionTagConstants)"
+    />
+  </Target>
+
+  <Target Name="_DefineVersionTagConstants" DependsOnTargets="RegisterVersionTags" BeforeTargets="CoreCompile">
+    <GetVersionTags>
+      <Output TaskParameter="DefineConstants" PropertyName="_DefineConstants" />
+      <Output TaskParameter="Constants" PropertyName="_VersionTagConstants" />
+    </GetVersionTags>
+    <PropertyGroup Condition="$(_DefineConstants)">
+      <DefineConstants>$(DefineConstants);$(_VersionTagConstants)</DefineConstants>
+    </PropertyGroup>
+  </Target>
+
+  <PropertyGroup>
+    <GetPackageVersionDependsOn>$(GetPackageVersionDependsOn);_SetPackageVersionTag</GetPackageVersionDependsOn>
+  </PropertyGroup>
+  <Target Name="_SetPackageVersionTag" DependsOnTargets="RegisterVersionTags">
+    <GetVersionTags>
+      <Output TaskParameter="BuildVersion" PropertyName="_BuildVersion" />
+    </GetVersionTags>
+    <PropertyGroup Condition="'$(_BuildVersion)' != ''">
+      <PackageVersion>$(PackageVersion).$(_BuildVersion)</PackageVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="_ImportVersionTagsCheck"
+			DependsOnTargets="RegisterVersionTags"
+			BeforeTargets="GenerateNuspec;_GetPackageFiles"
+			Condition="'$(IsPackable)' == 'true' AND '$(VersionTags)' != ''">
+    <AdHoc.Build.VersionTags.ImportVersionTagsCheck
+			PackageId="$(PackageId)"
+			OutputPath="$(BaseIntermediateOutputPath)"
+			Items="@(None)"
+		>
+      <Output TaskParameter="PackItems" ItemName="_VersionTagsPackItems" />
+      <Output TaskParameter="RemoveItems" ItemName="_VersionTagsRemoveItems" />
+    </AdHoc.Build.VersionTags.ImportVersionTagsCheck>
+
+    <ItemGroup>
+      <None Remove="@(_VersionTagsRemoveItems)" />
+      <None Include="$(MSBuildThisFileDirectory)../build/AdHoc.Build.VersionTags.Transitive.dll" Visible="false"
+				  Pack="true" PackagePath="buildTransitive" />
+      <None Include="@(_VersionTagsPackItems)" />
+    </ItemGroup>
+  </Target>
+</Project>
