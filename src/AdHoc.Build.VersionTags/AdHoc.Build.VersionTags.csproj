@@ -48,4 +48,12 @@
     </ItemGroup>
   </Target>
 
+  <!-- Define GetTargetPath for transitive builds to support solution-level packing -->
+  <Target Name="GetTargetPath" Condition="'$(Transitive)' == 'true'" Returns="@(TargetPathWithTargetPlatformMoniker)">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="$(TargetPath)">
+        <TargetPlatformMoniker>$(TargetPlatformMoniker)</TargetPlatformMoniker>
+      </TargetPathWithTargetPlatformMoniker>
+    </ItemGroup>
+  </Target>
 </Project>
