@@ -31,10 +31,11 @@ Version Tags solves this by using the **build version** component with `{Version
 `1.0.0, 1.0.0.1-tag0, 1.0.0.1-tag1, 1.0.0.2-tag0-tag1`
 
 ### 2. **Minimal Package Size**
-Reduce download overhead by creating purpose-built packages:
+Reduce download overhead by creating purpose-built packages like:
 - Production package excludes debug symbols and verbose logging
-- ASP.NET-specific variant only includes `IResponseMetaDataProvider` when needed
+- Device/OS-specific implemntations
 - Framework-specific implementations loaded conditionally
+- ASP.NET-specific variant implementing `IEndpointMetadataProvider` or `IResult` when needed
 
 ### 3. **Clear Feature Communication**
 ```xml
