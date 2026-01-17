@@ -7,4 +7,9 @@
   <ItemGroup>
     <PackageReference Include="AdHoc.Build.VersionTags" VersionOverride="$(Version)" PrivateAssets="all" />
   </ItemGroup>
+
+  <Target Name="_BuildPackage" BeforeTargets="CollectPackageReferences">
+    <Exec Condition="!Exists('$(PackageOutputPath)AdHoc.Build.VersionTags.$(Version).nupkg')"
+          Command="dotnet clean &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot; --configuration Release &amp; dotnet pack &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot;" />
+  </Target>
 </Project>
