@@ -23,8 +23,12 @@
     <File Path=".props/sign.snk" />
   </Folder>
   <Folder Name="/samples/">
-    <Project Path="samples/Samples.ConsoleApp/Samples.ConsoleApp.csproj" />
-    <Project Path="samples/Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj" />
+    <Project Path="samples/Samples.ConsoleApp/Samples.ConsoleApp.csproj">
+      <BuildDependency Project="samples/Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj" />
+    </Project>
+    <Project Path="samples/Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj">
+      <BuildDependency Project="src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj" />
+    </Project>
   </Folder>
   <Project Path="src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj" />
 </Solution>
