@@ -51,8 +51,8 @@ public class ImportVersionTagsCheck : BuildTask
         File.WriteAllText(targets, $@"<Project>
 	<UsingTask TaskName=""AdHoc.Build.VersionTags.CheckVersionTags"" AssemblyFile=""../tools/AdHoc.Build.VersionTags.Transitive.dll"" />
 
-	<Target Name=""CheckVersionTags_{PackageId.Replace('.', '_')}"" BeforeTargets=""CheckVersionTags"" AfterTargets=""ResolvePackageAssets"">
-		<CheckVersionTags PackageId=""{PackageId}"" Version=""@(ResolvedCompileFileDefinitions->WithMetadataValue('NuGetPackageId', '{PackageId}')->Metadata('NuGetPackageVersion'))"" />
+	<Target Name=""CheckVersionTags_{PackageId.Replace('.', '_')}"" AfterTargets=""ResolvePackageAssets"">
+		<AdHoc.Build.VersionTags.CheckVersionTags PackageId=""{PackageId}"" Version=""@(ResolvedCompileFileDefinitions->WithMetadataValue('NuGetPackageId', '{PackageId}')->Metadata('NuGetPackageVersion'))"" />
 	</Target>
 </Project>");
 

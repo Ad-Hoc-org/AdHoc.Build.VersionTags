@@ -36,10 +36,10 @@
     <None Include="transitive/**/*.cs" />
   </ItemGroup>
 
-  <Target Name="_BuildTransitive" BeforeTargets="Build" Condition="'$(Transitive)' != 'true'">
+  <Target Name="_BuildTransitive" AfterTargets="Build" Condition="'$(Transitive)' != 'true'">
     <MSBuild Projects="$(MSBuildThisFile)" Properties="Transitive=true;" Targets="Build" />
   </Target>
-  <Target Name="_CopyOutputToIntermediate" AfterTargets="CoreBuild">
+  <Target Name="_CopyOutputToIntermediate" AfterTargets="Build" BeforeTargets="_BuildTransitive">
     <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(IntermediateOutputPath)/tools" />
   </Target>
   
