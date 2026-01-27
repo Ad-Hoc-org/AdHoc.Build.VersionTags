@@ -27,10 +27,6 @@ public class ImportVersionTagsCheck : BuildTask
 
     public override bool Execute()
     {
-        if (BuildEngine4.GetRegisteredTaskObject(VersionTags.RegisteredKey, RegisteredTaskObjectLifetime.Build) is not VersionTags versionTags
-            || versionTags.Tags.Count == 0
-        )
-            return true;
         if (PackageId is null)
         {
             Log.LogError($"{nameof(PackageId)} is required.");
@@ -53,7 +49,7 @@ public class ImportVersionTagsCheck : BuildTask
             ["Pack"] = "true"
         }));
         File.WriteAllText(targets, $@"<Project>
-	<UsingTask TaskName=""AdHoc.Build.VersionTags.CheckVersionTags"" AssemblyFile=""AdHoc.Build.VersionTags.Transitive.dll"" />
+	<UsingTask TaskName=""AdHoc.Build.VersionTags.CheckVersionTags"" AssemblyFile=""../tools/AdHoc.Build.VersionTags.Transitive.dll"" />
 
 	<Target Name=""CheckVersionTags_{PackageId.Replace('.', '_')}"" BeforeTargets=""CheckVersionTags"" AfterTargets=""ResolvePackageAssets"">
 		<CheckVersionTags PackageId=""{PackageId}"" Version=""@(ResolvedCompileFileDefinitions->WithMetadataValue('NuGetPackageId', '{PackageId}')->Metadata('NuGetPackageVersion'))"" />

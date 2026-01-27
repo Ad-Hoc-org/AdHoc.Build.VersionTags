@@ -3,8 +3,13 @@
 
 namespace Samples.MyTaggedPackage;
 
-public interface IResult
+public partial interface IResult
 {
     bool IsSuccess { get; }
 }
 
+#if FEATURE_ASPNET
+public partial interface IResult : Microsoft.AspNetCore.Http.IResult
+{
+}
+#endif

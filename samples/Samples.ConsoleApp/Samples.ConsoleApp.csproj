@@ -22,7 +22,7 @@
     <Message Importance="High" Text="Using Samples.MyTaggedPackage version $(MyTaggedPackageVersion) with tags '$(PackageVersionTags)'" />
   
     <Exec Condition="!Exists('$(PackageOutputPath)Samples.MyTaggedPackage.$(MyTaggedPackageVersion).nupkg')"
-          Command="dotnet clean &quot;$(MSBuildThisFileDirectory)../Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj&quot; --configuration Release &amp; dotnet pack &quot;$(MSBuildThisFileDirectory)../Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj&quot; /p:VersionTags=$(PackageVersionTags)" />
+          Command="dotnet pack &quot;$(MSBuildThisFileDirectory)../Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj&quot; /p:VersionTags=$(PackageVersionTags)" />
   </Target>
 
 </Project>

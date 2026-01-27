@@ -1,16 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks></TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <IsBuildTaskProject>true</IsBuildTaskProject>
+
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
+    
     <NoWarn>$(NoWarn);NU5128</NoWarn>
-
     
     <Transitive>false</Transitive>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(Transitive)">
+  <PropertyGroup Condition="'$(Transitive)' == 'true'">
     <AssemblyName>$(AssemblyName).Transitive</AssemblyName>
   </PropertyGroup>
 
@@ -24,7 +26,7 @@
     <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(Transitive)">
+  <ItemGroup Condition="'$(Transitive)' == 'true'">
     <Compile Remove="**/*.cs" />
     <Compile Include="transitive/**/*.cs" />
   </ItemGroup>
@@ -34,26 +36,17 @@
     <None Include="transitive/**/*.cs" />
   </ItemGroup>
 
-  <Target Name="BuildTools" BeforeTargets="Build" Condition="'$(Transitive)' != 'true'">
-    <MSBuild Projects="$(MSBuildProjectFile)" Properties="Transitive=true;GeneratePackageOnBuild=false;Configuration=$(Configuration)" Targets="Build" />
+  <Target Name="_BuildTransitive" BeforeTargets="Build" Condition="'$(Transitive)' != 'true'">
+    <MSBuild Projects="$(MSBuildThisFile)" Properties="Transitive=true;" Targets="Build" />
   </Target>
-  <Target Name="OutputToIntermediate" AfterTargets="CoreBuild">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(BaseIntermediateOutputPath)$(Configuration)/build" />
+  <Target Name="_CopyOutputToIntermediate" AfterTargets="CoreBuild">
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(IntermediateOutputPath)/tools" />
   </Target>
   
-  <Target Name="IncludeToolsInPackage" BeforeTargets="GenerateNuspec">
+  <Target Name="_IncludeToolsInPackage" BeforeTargets="GenerateNuspec">
     <ItemGroup>
-      <_PackageFiles Include="$(IntermediateOutputPath)build/$(AssemblyName).Transitive.dll" PackagePath="build" />
-      <_PackageFiles Include="$(IntermediateOutputPath)build/$(AssemblyName).dll" PackagePath="build" />
-    </ItemGroup>
-  </Target>
-
-  <!-- Define GetTargetPath for transitive builds to support solution-level packing -->
-  <Target Name="GetTargetPath" Condition="'$(Transitive)' == 'true'" Returns="@(TargetPathWithTargetPlatformMoniker)">
-    <ItemGroup>
-      <TargetPathWithTargetPlatformMoniker Include="$(TargetPath)">
-        <TargetPlatformMoniker>$(TargetPlatformMoniker)</TargetPlatformMoniker>
-      </TargetPathWithTargetPlatformMoniker>
+      <_PackageFiles Include="$(IntermediateOutputPath)tools/$(AssemblyName).Transitive.dll" PackagePath="tools" />
+      <_PackageFiles Include="$(IntermediateOutputPath)tools/$(AssemblyName).dll" PackagePath="tools" />
     </ItemGroup>
   </Target>
 </Project>

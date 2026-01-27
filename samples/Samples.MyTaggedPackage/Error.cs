@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics;
+#if FEATURE_ASPNET
+using Microsoft.AspNetCore.Http;
+#endif
 
 namespace Samples.MyTaggedPackage;
 
@@ -27,6 +30,17 @@ public record Error : IResult
             var method = DiagnosticMethodInfo.Create(frame);
             if (method is not null)
                 Method = method.DeclaringTypeName + '.' + method.Name;
+        }
+    }
+#endif
+
+#if FEATURE_ASPNET
+    public async Task ExecuteAsync(HttpContext httpContext)
+    {
+        httpContext.Response.StatusCode = 500;
+        if (Message is not null)
+        {
+            await httpContext.Response.WriteAsync(Message);
         }
     }
 #endif

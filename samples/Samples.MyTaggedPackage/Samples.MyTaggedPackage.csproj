@@ -1,15 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net10.0</TargetFrameworks>
-    <VersionTags>debug</VersionTags>
+    <VersionTags>debug;aspnet</VersionTags>
   </PropertyGroup>
+  <ItemGroup>
+    <VersionTags Include="aspnet" />
+    <VersionTags Include="debug" />
+    <VersionTags Include="debug-aspnet" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AdHoc.Build.VersionTags" VersionOverride="$(Version)" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup Condition="$(VersionTags.Contains('aspnet'))">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
   <Target Name="_BuildPackage" BeforeTargets="CollectPackageReferences">
-    <Exec Condition="!Exists('$(PackageOutputPath)AdHoc.Build.VersionTags.$(Version).nupkg')"
-          Command="dotnet clean &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot; --configuration Release &amp; dotnet pack &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot;" />
+    <Exec Condition="!Exists('$(PackageOutputPath)AdHoc.Build.VersionTags.$(Version).nupkg')" Command="dotnet pack &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot;" />
   </Target>
 </Project>
