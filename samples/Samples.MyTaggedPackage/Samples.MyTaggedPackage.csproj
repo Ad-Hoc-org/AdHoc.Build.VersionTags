@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFrameworks>net10.0</TargetFrameworks>
     <VersionTags>debug;aspnet</VersionTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <VersionTags Include="aspnet" />
@@ -10,17 +9,24 @@
     <VersionTags Include="debug-aspnet" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AdHoc.Build.VersionTags" VersionOverride="$(Version)" PrivateAssets="all" />
-  </ItemGroup>
-
   <ItemGroup Condition="$(VersionTags.Contains('aspnet'))">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AdHoc.Build.VersionTags" VersionOverride="$(Version)" PrivateAssets="all" />
+    <ProjectReference Include="..\..\src\AdHoc.Build.VersionTags\AdHoc.Build.VersionTags.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
+  </ItemGroup>
   <Target Name="_BuildPackage" BeforeTargets="Restore;CollectPackageReferences">
     <Exec Condition="!Exists('$(PackageOutputPath)AdHoc.Build.VersionTags.$(Version).nupkg')"
-          Command="dotnet build &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot; -o &quot;$(MSBuildThisFileDirectory)$(BaseOutputPath)AdHoc.Build.VersionTags/&quot;" 
+          Command="dotnet pack &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot;"
           ContinueOnError="true" />
+
+    <ItemGroup>
+      <ProjectReference Remove="..\..\src\AdHoc.Build.VersionTags\AdHoc.Build.VersionTags.csproj" />
+    </ItemGroup>
   </Target>
 </Project>

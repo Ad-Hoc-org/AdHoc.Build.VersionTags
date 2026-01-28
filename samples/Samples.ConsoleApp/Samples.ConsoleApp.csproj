@@ -16,12 +16,20 @@
 
   <ItemGroup>
     <PackageReference Include="Samples.MyTaggedPackage" VersionOverride="$(MyTaggedPackageVersion)" />
+    <ProjectReference Include="..\Samples.MyTaggedPackage\Samples.MyTaggedPackage.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
   </ItemGroup>
 
   <Target Name="_BuildPackage" BeforeTargets="Restore;CollectPackageReferences">
     <Exec Condition="!Exists('$(PackageOutputPath)Samples.MyTaggedPackage.$(MyTaggedPackageVersion).nupkg')"
           Command="dotnet pack &quot;$(MSBuildThisFileDirectory)../Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj&quot; /p:VersionTags=$(PackageVersionTags)"
           ContinueOnError="true" />
+
+    <ItemGroup>
+      <ProjectReference Remove="..\Samples.MyTaggedPackage\Samples.MyTaggedPackage.csproj"/>
+    </ItemGroup>
   </Target>
 
 </Project>
