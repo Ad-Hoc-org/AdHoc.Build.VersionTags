@@ -18,11 +18,10 @@
     <PackageReference Include="Samples.MyTaggedPackage" VersionOverride="$(MyTaggedPackageVersion)" />
   </ItemGroup>
 
-  <Target Name="_BuildPackage" BeforeTargets="CollectPackageReferences">
-    <Message Importance="High" Text="Using Samples.MyTaggedPackage version $(MyTaggedPackageVersion) with tags '$(PackageVersionTags)'" />
-  
+  <Target Name="_BuildPackage" BeforeTargets="Restore;CollectPackageReferences">
     <Exec Condition="!Exists('$(PackageOutputPath)Samples.MyTaggedPackage.$(MyTaggedPackageVersion).nupkg')"
-          Command="dotnet pack &quot;$(MSBuildThisFileDirectory)../Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj&quot; /p:VersionTags=$(PackageVersionTags)" />
+          Command="dotnet pack &quot;$(MSBuildThisFileDirectory)../Samples.MyTaggedPackage/Samples.MyTaggedPackage.csproj&quot; /p:VersionTags=$(PackageVersionTags)"
+          ContinueOnError="true" />
   </Target>
 
 </Project>

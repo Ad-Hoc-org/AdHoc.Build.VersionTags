@@ -34,26 +34,15 @@ public class DispatchPack : BuildTask
         var id = Guid.NewGuid();
         BuildEngine4.RegisterTaskObject(key, id, RegisteredTaskObjectLifetime.Build, allowEarlyCollection: false);
         if (!id.Equals(BuildEngine4.GetRegisteredTaskObject(key, RegisteredTaskObjectLifetime.Build)))
-        {
-            Log.LogMessage(MessageImportance.Low, $"Package '{PackageId}' already dispatched: {BuildEngine4.GetRegisteredTaskObject(key, RegisteredTaskObjectLifetime.Build)}");
             return true; // already dispatched
-        }
 
         if (ProjectFile is null)
         {
             Log.LogError($"{nameof(ProjectFile)} is required.");
             return false;
         }
-        if (VersionTags is null)
-        {
-            Log.LogError($"{nameof(VersionTags)} is required.");
-            return false;
-        }
-        if (VersionTagItems is null)
-        {
-            Log.LogError($"{nameof(VersionTagItems)} is required.");
-            return false;
-        }
+        VersionTags ??= string.Empty;
+        VersionTagItems ??= [];
 
         HashSet<string> versionTags = [.. VersionTagItems.Select(item =>
             string.Join("-", ParseVersionTags.ParseTags(item.ItemSpec, Log)?.OrderBy(t => t).ToArray() ?? [])
@@ -61,7 +50,6 @@ public class DispatchPack : BuildTask
         if (!string.IsNullOrWhiteSpace(VersionTags))
             versionTags.Add("");
         versionTags.Remove(string.Join("-", ParseVersionTags.ParseTags(VersionTags, Log)?.OrderBy(t => t).ToArray() ?? []));
-        Log.LogMessage(MessageImportance.High, $"Dispatching {versionTags.Count} package(s) for '{PackageId}': {string.Join(", ", versionTags)}");
 
         foreach (var tags in versionTags)
             if (!BuildEngine.BuildProjectFile(

@@ -2,8 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks></TargetFrameworks>
     <TargetFramework>netstandard2.0</TargetFramework>
-
-    <GenerateDependencyFile>false</GenerateDependencyFile>
+    
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
     
@@ -25,10 +24,9 @@
   </ItemGroup>
   
   <Target Name="_IncludeToolsInPackage" BeforeTargets="GenerateNuspec">
-    <Message Importance="high" Text="Including AdHoc.Build.VersionTags.dll and AdHoc.Build.VersionTags.Transitive.dll in package tools folder from $(OutputPath)." />
     <ItemGroup>
       <_PackageFiles Include="$(OutputPath)$(AssemblyName).dll" PackagePath="tools" />
-      <_PackageFiles Include="../AdHoc.Build.VersionTags.Transitive/$(OutputPath)$(AssemblyName).Transitive.dll" PackagePath="tools" />
+      <_PackageFiles Include="$(OutputPath)$(AssemblyName).Transitive.dll" PackagePath="tools" />
     </ItemGroup>
   </Target>
 </Project>

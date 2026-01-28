@@ -17,7 +17,9 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <Target Name="_BuildPackage" BeforeTargets="CollectPackageReferences">
-    <Exec Condition="!Exists('$(PackageOutputPath)AdHoc.Build.VersionTags.$(Version).nupkg')" Command="dotnet pack &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot;" />
+  <Target Name="_BuildPackage" BeforeTargets="Restore;CollectPackageReferences">
+    <Exec Condition="!Exists('$(PackageOutputPath)AdHoc.Build.VersionTags.$(Version).nupkg')"
+          Command="dotnet build &quot;$(MSBuildThisFileDirectory)../../src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj&quot; -o &quot;$(MSBuildThisFileDirectory)$(BaseOutputPath)AdHoc.Build.VersionTags/&quot;" 
+          ContinueOnError="true" />
   </Target>
 </Project>
