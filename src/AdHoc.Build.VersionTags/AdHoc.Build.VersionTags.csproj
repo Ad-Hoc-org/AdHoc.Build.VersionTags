@@ -1,53 +1,34 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks></TargetFrameworks>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <IsBuildTaskProject>true</IsBuildTaskProject>
 
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
     
     <NoWarn>$(NoWarn);NU5128</NoWarn>
-    
-    <Transitive>false</Transitive>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Transitive)' == 'true'">
-    <AssemblyName>$(AssemblyName).Transitive</AssemblyName>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(Transitive)' != 'true'">
-    <None Include="build/**" Pack="true" PackagePath="build" />
-    <None Include="buildMultiTargeting/**" Pack="true" PackagePath="buildMultiTargeting" />
+  <ItemGroup>
+    <ProjectReference Include="../AdHoc.Build.VersionTags.Transitive/AdHoc.Build.VersionTags.Transitive.csproj" PrivateAssets="all" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Framework" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Transitive)' == 'true'">
-    <Compile Remove="**/*.cs" />
-    <Compile Include="transitive/**/*.cs" />
+  <ItemGroup>
+    <None Include="build/**" Pack="true" PackagePath="build" />
+    <None Include="buildMultiTargeting/**" Pack="true" PackagePath="buildMultiTargeting" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(Transitive)' != 'true'">
-    <Compile Remove="transitive/**/*.cs" />
-    <None Include="transitive/**/*.cs" />
-  </ItemGroup>
-
-  <Target Name="_BuildTransitive" AfterTargets="Build" Condition="'$(Transitive)' != 'true'">
-    <MSBuild Projects="$(MSBuildThisFile)" Properties="Transitive=true;" Targets="Build" />
-  </Target>
-  <Target Name="_CopyOutputToIntermediate" AfterTargets="Build" BeforeTargets="_BuildTransitive">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(IntermediateOutputPath)/tools" />
-  </Target>
   
   <Target Name="_IncludeToolsInPackage" BeforeTargets="GenerateNuspec">
+    <Message Importance="high" Text="Including AdHoc.Build.VersionTags.dll and AdHoc.Build.VersionTags.Transitive.dll in package tools folder from $(OutputPath)." />
     <ItemGroup>
-      <_PackageFiles Include="$(IntermediateOutputPath)tools/$(AssemblyName).Transitive.dll" PackagePath="tools" />
-      <_PackageFiles Include="$(IntermediateOutputPath)tools/$(AssemblyName).dll" PackagePath="tools" />
+      <_PackageFiles Include="$(OutputPath)$(AssemblyName).dll" PackagePath="tools" />
+      <_PackageFiles Include="../AdHoc.Build.VersionTags.Transitive/$(OutputPath)$(AssemblyName).Transitive.dll" PackagePath="tools" />
     </ItemGroup>
   </Target>
 </Project>

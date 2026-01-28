@@ -30,5 +30,6 @@
       <BuildDependency Project="src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj" />
     </Project>
   </Folder>
+  <Project Path="src/AdHoc.Build.VersionTags.Transitive/AdHoc.Build.VersionTags.Transitive.csproj" Id="233d2517-a328-4249-9367-ce901774f945" />
   <Project Path="src/AdHoc.Build.VersionTags/AdHoc.Build.VersionTags.csproj" />
 </Solution>
