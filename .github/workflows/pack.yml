@@ -41,7 +41,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Pack the project
-        run: dotnet pack --configuration Release --output ./nupkgs /p:RepositoryUrl=https://github.com/${{ github.repository }}
+        run: dotnet pack --configuration Release --output ./nupkgs /p:RepositoryUrl=https://github.com/${{ github.repository }} /p:BuildInParallel=false
 
       - name: Validate package version
         run: |

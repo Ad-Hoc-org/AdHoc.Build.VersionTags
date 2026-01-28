@@ -38,7 +38,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Build
-        run: dotnet build --configuration ${{ matrix.configuration }}
+        run: dotnet build --configuration ${{ matrix.configuration }} /p:BuildInParallel=false
 
   test:
     name: Test ${{ matrix.configuration-name }} - ${{ matrix.framework }}
@@ -73,4 +73,4 @@ jobs:
     - name: Test
       id: tests
       run: |
-        dotnet test --framework ${{ matrix.framework }} --configuration ${{ matrix.configuration }}
+        dotnet test --framework ${{ matrix.framework }} --configuration ${{ matrix.configuration }} /p:BuildInParallel=false
