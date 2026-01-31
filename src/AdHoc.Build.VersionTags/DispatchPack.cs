@@ -17,8 +17,6 @@ public class DispatchPack : BuildTask
     public string? VersionTags { get; set; }
     public ITaskItem[]? VersionTagItems { get; set; }
 
-    private const string DispatchPrefix = nameof(DispatchPack) + "-";
-
     public override bool Execute()
     {
         if (PackageId is null)
@@ -26,15 +24,6 @@ public class DispatchPack : BuildTask
             Log.LogError($"{nameof(PackageId)} is required.");
             return false;
         }
-
-        var key = DispatchPrefix + PackageId;
-        if (BuildEngine4.GetRegisteredTaskObject(key, RegisteredTaskObjectLifetime.Build) is not null)
-            return true; // already dispatched
-
-        var id = Guid.NewGuid();
-        BuildEngine4.RegisterTaskObject(key, id, RegisteredTaskObjectLifetime.Build, allowEarlyCollection: false);
-        if (!id.Equals(BuildEngine4.GetRegisteredTaskObject(key, RegisteredTaskObjectLifetime.Build)))
-            return true; // already dispatched
 
         if (ProjectFile is null)
         {
@@ -58,6 +47,7 @@ public class DispatchPack : BuildTask
                 new Dictionary<string, string>
                 {
                     ["VersionTags"] = tags,
+                    ["_IsVersionTagsPack"] = "true"
                 },
                 new Dictionary<string, object>()
             ))

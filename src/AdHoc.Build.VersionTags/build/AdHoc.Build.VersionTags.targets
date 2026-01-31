@@ -60,7 +60,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="_DispatchVersionTagsPack" AfterTargets="Pack">
+  <Target Name="_DispatchVersionTagsPack" AfterTargets="Pack" Condition="'$(_IsVersionTagsPack)' != 'true'">
     <AdHoc.Build.VersionTags.DispatchPack
       ProjectFile="$(MSBuildProjectFullPath)" PackageId="$(PackageId)"
       VersionTags="$(VersionTags)" VersionTagItems="@(VersionTags)" />
